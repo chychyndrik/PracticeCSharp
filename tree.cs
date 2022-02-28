@@ -1,12 +1,13 @@
 ﻿using System;
-namespace ConsoleApp1.Classes
+using System.IO;
+using System.Collections.Generic;
+namespace _1_1
 {
     public class BinaryTree //класс, реализующий АТД «дерево бинарного поиска»
     {
         //вложенный класс, отвечающий за узлы и операции допустимы для дерева бинарного
         //поиска
-        public Node root1, root2;
-        public class Node
+        private class Node
         {
             public object inf; //информационное поле
             public Node left; //ссылка на левое поддерево
@@ -27,7 +28,7 @@ namespace ConsoleApp1.Classes
                 }
                 else
                 {
-                    if (((IComparable)(r.inf)).CompareTo(nodeInf) > 0)
+                if (((IComparable)(r.inf)).CompareTo(nodeInf) > 0)
                     {
                         Add(ref r.left, nodeInf);
                     }
@@ -55,6 +56,24 @@ namespace ConsoleApp1.Classes
                     Inorder(r.rigth);
                 }
             }
+
+
+            //------------------------------------------------------------------------------
+            public static void InorderL(Node r, ref List<int> lis) //Запись массива в лист симметричным обходом
+            {
+                if (r != null)
+                {
+                    InorderL(r.left, ref lis);
+
+                    lis.Add(Convert.ToInt32(r.inf));
+
+                    InorderL(r.rigth, ref lis);
+                }
+                
+            }
+            //------------------------------------------------------------------------------
+
+
             public static void Postorder(Node r) //обратный обход дерева
             {
                 if (r != null)
@@ -78,7 +97,7 @@ namespace ConsoleApp1.Classes
                         item = r;
                     }
                     else
-                    {
+                {
                         if (((IComparable)(r.inf)).CompareTo(key) > 0)
                         {
                             Search(r.left, key, out item);
@@ -130,7 +149,7 @@ namespace ConsoleApp1.Classes
                             }
                             else
                             {
-                                if (t.rigth == null)
+                            if (t.rigth == null)
                                 {
                                     t = t.left;
                                 }
@@ -143,6 +162,24 @@ namespace ConsoleApp1.Classes
                     }
                 }
             }
+
+            /*
+            public static bool operator ==(Node N1, Node N2)
+            {
+                if ((N1.left.inf == N2.left.inf) && (N1.rigth.inf == N2.rigth.inf))
+                    return true;
+                else
+                    return false;
+            }
+            public static bool operator !=(Node N1, Node N2)
+            {
+                if (!((N1.left.inf == N2.left.inf) && (N1.rigth.inf == N2.rigth.inf)))
+                    return true;
+                else
+                    return false;
+            }
+            */
+
         } //конец вложенного класса
         Node tree; //ссылка на корень дерева
                    //свойство позволяет получить доступ к значению информационного поля корня дерева
@@ -172,6 +209,14 @@ namespace ConsoleApp1.Classes
         {
             Node.Inorder(tree);
         }
+
+        //------------------------------------------------------------------------------
+        public void InorderL(ref List<int> lis)
+        {
+            Node.InorderL(tree, ref lis);
+        }
+        //------------------------------------------------------------------------------
+
         public void Postorder()
         {
             Node.Postorder(tree);
@@ -190,27 +235,5 @@ namespace ConsoleApp1.Classes
             Node.Delete(ref tree, key);
         }
 
-        bool areIdentical(Node root1, Node root2)
-        {
-            if (root1 == null && root2 == null)
-                return true;
-            if (root1 == null || root2 == null)
-                return false;
-
-            return (root1.inf == root2.inf
-                && areIdentical(root1.left, root2.left)
-                && areIdentical(root1.rigth, root2.rigth));
-        }
-
-        public bool isSubtree(Node T, Node S)
-        {
-            if (S == null)
-                return true;
-            if (T == null)
-                return false;
-            if (areIdentical(T, S))
-                return true;
-            return isSubtree(T.left, S) || isSubtree(T.rigth, S);
-        }
     }
 }
