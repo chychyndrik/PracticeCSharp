@@ -1,23 +1,89 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-namespace _1_1
+namespace PracticeCSharp
 {
-    public class BinaryTree //класс, реализующий АТД «дерево бинарного поиска»
+    public class AVLTree //класс, реализующий АВЛ-дерево
     {
-        //вложенный класс, отвечающий за узлы и операции допустимы для дерева бинарного
-        //поиска
+        //вложенный класс, отвечающий за узлы и операции допустимы для АВЛ-дерева
         private class Node
         {
             public object inf; //информационное поле
+            public int height; //разница высот узла
             public Node left; //ссылка на левое поддерево
             public Node rigth; //ссылка на правое поддерево
-                               //конструктор вложенного класса, создает узел дерева
+
+            //конструктор вложенного класса, создает узел дерева
             public Node(object nodeInf)
             {
                 inf = nodeInf;
+                height = 1;
                 left = null;
                 rigth = null;
+            }
+
+            //возвращает высоту узла, в том числе и пустого
+            public int Height
+            {
+                get
+                {
+                    return (this != null) ? this.height : 0;
+                }
+            }//возвращает разницу высот правого и левого поддерева для заданного узла
+            public int BalanceFactor
+            {
+                get
+                {
+                    int rh = (this.rigth != null) ? this.rigth.Height : 0;
+                    int lh = (this.left != null) ? this.left.Height : 0;
+                    return rh - lh;
+                }
+            }
+            //пересчитывает высоту узла
+            public void NewHeight()
+            {
+                int rh = (this.rigth != null) ? this.rigth.Height : 0;
+                int lh = (this.left != null) ? this.left.Height : 0;
+                this.height = ((rh > lh) ? rh : lh) + 1;
+            }
+            //правый поворот
+            public static void RotationRigth(ref Node t)
+            {
+                Node x = t.left;
+                t.left = x.rigth;
+                x.rigth = t;
+                t.NewHeight();
+                x.NewHeight();
+                t = x;
+            }
+            //левый поворот
+            public static void RotationLeft(ref Node t)
+            {
+                Node x = t.rigth;
+                t.rigth = x.left;
+                x.left = t;
+                t.NewHeight();
+                x.NewHeight();
+                t = x;
+            }
+            //балансировка
+            public static void Rotation(ref Node t)
+            {
+                t.NewHeight();
+                if (t.BalanceFactor == 2)
+                {
+                    if (t.rigth.BalanceFactor < 0)
+                    {
+                        RotationRigth(ref t.rigth);
+                    }
+                    RotationLeft(ref t);
+                }
+                if (t.BalanceFactor == -2)
+                {
+                    if (t.left.BalanceFactor > 0)
+                    {
+                        RotationLeft(ref t.left);
+                    }
+                    RotationRigth(ref t);
+                }
             }
             //добавляет узел в дерево так, чтобы дерево оставалось деревом бинарного поиска
             public static void Add(ref Node r, object nodeInf)
@@ -28,7 +94,7 @@ namespace _1_1
                 }
                 else
                 {
-                if (((IComparable)(r.inf)).CompareTo(nodeInf) > 0)
+                    if (((IComparable)(r.inf)).CompareTo(nodeInf) > 0)
                     {
                         Add(ref r.left, nodeInf);
                     }
@@ -37,12 +103,13 @@ namespace _1_1
                         Add(ref r.rigth, nodeInf);
                     }
                 }
+                Rotation(ref r);
             }
             public static void Preorder(Node r) //прямой обход дерева
             {
                 if (r != null)
                 {
-                    Console.Write("{0} ", r.inf);
+                    Console.Write("({0} {1}) ", r.inf, r.height);
                     Preorder(r.left);
                     Preorder(r.rigth);
                 }
@@ -52,35 +119,17 @@ namespace _1_1
                 if (r != null)
                 {
                     Inorder(r.left);
-                    Console.Write("{0} ", r.inf);
+                    Console.Write("({0} {1}) ", r.inf, r.height);
                     Inorder(r.rigth);
                 }
             }
-
-
-            //------------------------------------------------------------------------------
-            public static void InorderL(Node r, ref List<int> lis) //Запись массива в лист симметричным обходом
-            {
-                if (r != null)
-                {
-                    InorderL(r.left, ref lis);
-
-                    lis.Add(Convert.ToInt32(r.inf));
-
-                    InorderL(r.rigth, ref lis);
-                }
-                
-            }
-            //------------------------------------------------------------------------------
-
-
             public static void Postorder(Node r) //обратный обход дерева
             {
                 if (r != null)
                 {
                     Postorder(r.left);
                     Postorder(r.rigth);
-                    Console.Write("{0} ", r.inf);
+                    Console.Write("({0} {1}) ", r.inf, r.height);
                 }
             }
             //поиск ключевого узла в дереве
@@ -97,7 +146,7 @@ namespace _1_1
                         item = r;
                     }
                     else
-                {
+                    {
                         if (((IComparable)(r.inf)).CompareTo(key) > 0)
                         {
                             Search(r.left, key, out item);
@@ -110,7 +159,7 @@ namespace _1_1
                 }
             }
             //методы Del и Delete позволяют удалить узел в дереве так, чтобы дерево при этом
-            //оставалось деревом бинарного поиска
+            //оставалось АВЛ-деревом
             private static void Del(Node t, ref Node tr)
             {
                 if (tr.rigth != null)
@@ -127,7 +176,7 @@ namespace _1_1
             {
                 if (t == null)
                 {
-                    throw new Exception("Данное значение в дереве отсутствует");
+                    Console.WriteLine("Данное значение в дереве отсутствует");
                 }
                 else
                 {
@@ -149,7 +198,7 @@ namespace _1_1
                             }
                             else
                             {
-                            if (t.rigth == null)
+                                if (t.rigth == null)
                                 {
                                     t = t.left;
                                 }
@@ -160,26 +209,9 @@ namespace _1_1
                             }
                         }
                     }
+                    Rotation(ref t);
                 }
             }
-
-            /*
-            public static bool operator ==(Node N1, Node N2)
-            {
-                if ((N1.left.inf == N2.left.inf) && (N1.rigth.inf == N2.rigth.inf))
-                    return true;
-                else
-                    return false;
-            }
-            public static bool operator !=(Node N1, Node N2)
-            {
-                if (!((N1.left.inf == N2.left.inf) && (N1.rigth.inf == N2.rigth.inf)))
-                    return true;
-                else
-                    return false;
-            }
-            */
-
         } //конец вложенного класса
         Node tree; //ссылка на корень дерева
                    //свойство позволяет получить доступ к значению информационного поля корня дерева
@@ -188,11 +220,11 @@ namespace _1_1
             set { tree.inf = value; }
             get { return tree.inf; }
         }
-        public BinaryTree() //открытый конструктор
+        public AVLTree() //открытый конструктор
         {
             tree = null;
         }
-        private BinaryTree(Node r) //закрытый конструктор
+        private AVLTree(Node r) //закрытый конструктор
         {
             tree = r;
         }
@@ -209,24 +241,16 @@ namespace _1_1
         {
             Node.Inorder(tree);
         }
-
-        //------------------------------------------------------------------------------
-        public void InorderL(ref List<int> lis)
-        {
-            Node.InorderL(tree, ref lis);
-        }
-        //------------------------------------------------------------------------------
-
         public void Postorder()
         {
             Node.Postorder(tree);
         }
         //поиск ключевого узла в дереве
-        public BinaryTree Search(object key)
+        public AVLTree Search(object key)
         {
             Node r;
             Node.Search(tree, key, out r);
-            BinaryTree t = new BinaryTree(r);
+            AVLTree t = new AVLTree(r);
             return t;
         }
         //удаление ключевого узла в дереве
@@ -234,6 +258,5 @@ namespace _1_1
         {
             Node.Delete(ref tree, key);
         }
-
     }
 }

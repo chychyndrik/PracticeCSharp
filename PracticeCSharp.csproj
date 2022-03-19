@@ -36,12 +36,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="input1.txt" />
-    <Content Include="input2.txt" />
+    <Content Include="input.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="tree.cs" />
+    <Compile Include="AVLTree.cs" />
+    <Compile Include="main.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
