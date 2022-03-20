@@ -34,11 +34,22 @@ namespace PracticeCSharp
         }
         static void Main()
         {
-            List<int> inputList = Input(@"D:\Projects\PracticeCSharp\input.txt");
-            AVLTree tree = new AVLTree();
+            List<int> inputList = Input(@"F:\Programs\Rep\PracticeCsharp\PracticeCSharp\input.txt");
+            BinaryTree tree = new BinaryTree();
             for (int i = 0; i < inputList.Count; i++)
             {
                 tree.Add(inputList[i]);
+            }
+
+            int n = Convert.ToInt32(Console.ReadLine());
+
+            if (n <= Math.Abs(tree.CountSubnode))
+            {
+                Console.WriteLine("Нельзя вообще");
+            }
+            else
+            {
+                Console.WriteLine("от " + Convert.ToString(tree.CountSubnode) + "до " + n);
             }
             Console.ReadKey();
         }
