@@ -44,7 +44,7 @@ namespace PracticeCSharp
             {
                 if (r != null)
                 {
-                    Console.Write("{0} ", r.inf);
+                    Console.Write("({0}, {1}) ", r.inf, r.countSubnode);
                     Preorder(r.left);
                     Preorder(r.rigth);
                 }
@@ -54,7 +54,7 @@ namespace PracticeCSharp
                 if (r != null)
                 {
                     Inorder(r.left);
-                    Console.Write("{0} ", r.inf);
+                    Console.Write("({0}, {1}) ", r.inf, r.countSubnode);
                     Inorder(r.rigth);
                 }
             }
@@ -64,7 +64,7 @@ namespace PracticeCSharp
                 {
                     Postorder(r.left);
                     Postorder(r.rigth);
-                    Console.Write("{0} ", r.inf);
+                    Console.Write("({0}, {1}) ", r.inf, r.countSubnode);
                 }
             }
             //поиск ключевого узла в дереве
@@ -146,6 +146,35 @@ namespace PracticeCSharp
                     }
                 }
             }
+
+            public static void GetCount(Node t, ref int count)
+            {
+                if (t != null)
+                {
+                    GetCount(t.left, ref count);
+                    GetCount(t.rigth, ref count);
+                    count++;
+                }
+            }
+            public static void IsBalanced(Node t, ref bool isBalanced)
+            {
+                if (t != null)
+                {
+                    int count1 = 0;
+                    GetCount(t.left, ref count1);
+                    int count2 = 0;
+                    GetCount(t.rigth, ref count2);
+                    if (Math.Abs(count1 - count2) > 1)
+                    {
+                        isBalanced = false;
+                    }
+                    else
+                    {
+                        IsBalanced(t.left, ref isBalanced);
+                        IsBalanced(t.rigth, ref isBalanced);
+                    }
+                }
+            }
         } //конец вложенного класса
         Node tree; //ссылка на корень дерева
                    //свойство позволяет получить доступ к значению информационного поля корня дерева
@@ -154,7 +183,13 @@ namespace PracticeCSharp
             set { tree.inf = value; }
             get { return tree.inf; }
         }
-         
+        public int CountSubnode
+        {
+            get
+            {
+                return tree.countSubnode;
+            }
+        }
         public BinaryTree() //открытый конструктор
         {
             tree = null;
@@ -192,6 +227,18 @@ namespace PracticeCSharp
         public void Delete(object key)
         {
             Node.Delete(ref tree, key);
+        }
+        public bool IsBalanced()
+        {
+            bool isBalanced = true;
+            Node.IsBalanced(tree, ref isBalanced);
+            return isBalanced;
+        }
+        public int GetCount()
+        {
+            int count = 0;
+            Node.GetCount(tree, ref count);
+            return count;
         }
     }
 }

@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AVLTree.cs" />
-    <Compile Include="BinaryTree.cs" />
+    <Compile Include="BinTree.cs" />
     <Compile Include="main.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
